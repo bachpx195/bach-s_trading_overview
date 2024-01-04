@@ -22,9 +22,12 @@ class HomeApp(HydraHeadApp):
 
       RawData(day_prices, "Hiển thị data ngày").run()
       RawData(hour_prices, "Hiển thị data giờ").run()
+      
+      if list_day is None:
+         list_day = day_prices.day.to_list()
 
-      list_day = day_prices.day.to_list()
-
-      for date in list_day:
-        ChartOverviewComponent(day_prices, hour_prices, date).run()
+      for date in day_prices.day.to_list():
+         if list_day and str(date) not in list_day:
+            continue
+         ChartOverviewComponent(day_prices, hour_prices, date).run()
 

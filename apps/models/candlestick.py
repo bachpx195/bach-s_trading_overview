@@ -29,22 +29,22 @@ class Candlestick:
             sql_query = 'SELECT * FROM DailyTradingJournal_development.candlesticks WHERE '
         if self.start_date and self.end_date:
             sql_query = sql_query + \
-                f"(date BETWEEN '{self.start_date} 17:00:00' AND '{self.end_date} 16:59:59') AND "
+                f"(candlesticks.date BETWEEN '{self.start_date} 17:00:00' AND '{self.end_date} 16:59:59') AND "
         if self.list_day:
             if len(self.list_day) == 1:
                 sql_query = sql_query + \
-                    f"(date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') AND "
+                    f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') AND "
             else:
                 for idx, day in enumerate(self.list_day):
                     if idx == len(self.list_day) - 1:
                         sql_query = sql_query + \
-                            f"(date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59')) AND "
+                            f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59')) AND "
                     elif idx == 0:
                         sql_query = sql_query + \
-                            f"((date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
+                            f"((candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
                     else:
                         sql_query = sql_query + \
-                            f"(date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
+                            f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
         if self.interval:
             sql_query = sql_query + \
                 f"candlesticks.time_type = {INTERVAL_HASH[self.interval]} AND "

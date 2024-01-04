@@ -16,6 +16,3 @@ class ChartOverviewComponent:
     st.write(date_with_name(self.date))
 
     ChartDailyComponent(self.day_prices, self.date).run()
-    
-
-    
