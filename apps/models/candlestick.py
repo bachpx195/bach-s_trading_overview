@@ -7,14 +7,19 @@ db = DataBase()
 INTERVAL_HASH = {"day": 1, "week": 2, "month": 3, "hour": 4, "15m": 5}
 
 class Candlestick:
-    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, join_analytic_table=None, list_day=None):
+    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, list_day=None):
         self.limit = limit if limit else 100000
         self.interval = interval
         self.merchandise_rate_id = merchandise_rate_id
         self.sort = sort
         self.start_date = start_date
         self.end_date = end_date
-        self.join_analytic_table = join_analytic_table
+        if interval == 'day':
+            self.join_analytic_table = 'day_analytics'
+        elif interval == 'hour':
+            self.join_analytic_table = 'hour_analytics'
+        else:
+            self.join_analytic_table = None
         self.list_day = list_day
 
     def to_df(self):

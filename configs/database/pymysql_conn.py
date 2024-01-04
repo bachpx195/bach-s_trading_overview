@@ -1,9 +1,6 @@
 import pymysql
 import pandas as pd
 
-import json
-
-
 class DataBase:
     def __init__(self):
         self.host = "localhost"
