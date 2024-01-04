@@ -1,6 +1,8 @@
 import streamlit as st
 import plotly.graph_objects as go
 from apps.helpers.datetime_helper import previous_day
+from apps.helpers.constants import CHART_CONFIG
+
 
 class ChartDailyComponent:
   def __init__(self, dataframe, date):
@@ -26,4 +28,4 @@ class ChartDailyComponent:
     fig.update_layout(xaxis_rangeslider_visible=False, xaxis=dict(
         showgrid=False), yaxis=dict(showgrid=False))
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)

@@ -41,29 +41,32 @@ class SearchOption:
       )
 
   def select_day(self):
-    if st.checkbox("Chọn khoảng thời gian"):
-      self.list_day = None
-      c1, c2 = st.columns([2, 2])
-      with c1:
-        if st.checkbox("Ngày bắt đầu phân tích"):
-          self.start_date = st.date_input('Chọn ngày bắt đầu')
-        else:
-          self.start_date = None
+    c1, c2 = st.columns([4, 4])
+    with c1:
+      if st.checkbox("Chọn khoảng thời gian"):
+        self.list_day = None
+        c1, c2 = st.columns([2, 2])
+        with c1:
+          if st.checkbox("Ngày bắt đầu phân tích"):
+            self.start_date = st.date_input('Chọn ngày bắt đầu')
+          else:
+            self.start_date = None
 
-      with c2:
-        if st.checkbox("Ngày kết thúc phân tích"):
-          self.end_date = st.date_input('Chọn ngày kết thúc')
-        else:
-          self.end_date = None
+        with c2:
+          if st.checkbox("Ngày kết thúc phân tích"):
+            self.end_date = st.date_input('Chọn ngày kết thúc')
+          else:
+            self.end_date = None
 
-    if st.checkbox("Chọn danh sách ngày"):
-      self.start_date = None
-      self.end_date = None
-      self.list_day = st.text_input(
-        "Chọn list ngày: ",
-        label_visibility="visible",
-        disabled=False,
-        placeholder="2023-12-20, 2023-12-21, ..."
-      )
+    with c2:
+      if st.checkbox("Chọn danh sách ngày"):
+        self.start_date = None
+        self.end_date = None
+        self.list_day = st.text_input(
+          "Chọn list ngày: ",
+          label_visibility="visible",
+          disabled=False,
+          placeholder="2023-12-20, 2023-12-21, ..."
+        )
 
     
