@@ -1,5 +1,5 @@
 import streamlit as st
-from apps.helpers.constants import LIST_MERCHANDISE_RATE, HOURS_IN_DAY
+from apps.helpers.constants import LIST_MERCHANDISE_RATE, LIST_DAY_IN_WEEK
 
 class SearchOption:
   def __init__(self):
@@ -8,6 +8,7 @@ class SearchOption:
     self.start_date = None
     self.end_date = None
     self.list_day = None
+    self.weekday = LIST_DAY_IN_WEEK
 
   def run(self):
     # config css
@@ -19,8 +20,9 @@ class SearchOption:
     self.select_merchandise_rate()
     self.select_record_limit()
     self.select_day()
+    self.select_week_day()
 
-    return self.merchandise_rate, self.record_limit, self.start_date, self.end_date, self.list_day
+    return self.merchandise_rate, self.record_limit, self.start_date, self.end_date, self.list_day, self.weekday
 
   def select_merchandise_rate(self):
     c1,_ = st.columns([2, 2])
@@ -40,6 +42,12 @@ class SearchOption:
         captions = ["Nhập", "1 Tuần", "1 Tháng", "3 Tháng", "Tất cả"]
       )
 
+  def select_week_day(self):
+    self.weekday = st.multiselect(
+        '',
+        LIST_DAY_IN_WEEK,
+        LIST_DAY_IN_WEEK)
+
   def select_day(self):
     c1, c2 = st.columns([4, 4])
     with c1:
@@ -57,7 +65,6 @@ class SearchOption:
             self.end_date = st.date_input('Chọn ngày kết thúc')
           else:
             self.end_date = None
-
     with c2:
       if st.checkbox("Chọn danh sách ngày"):
         self.start_date = None
