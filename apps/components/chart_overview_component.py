@@ -5,10 +5,14 @@ from apps.components.chart_hour_component import ChartHourComponent
 
 
 class ChartOverviewComponent:
-  def __init__(self, day_prices, hour_prices, date):
+  def __init__(self, week_prices, day_prices, hour_prices, btc_week_prices, btc_day_prices, btc_hour_prices, date):
     self.date = date
+    self.week_prices = week_prices
     self.day_prices = day_prices
     self.hour_prices = hour_prices
+    self.btc_week_prices = btc_week_prices
+    self.btc_day_prices = btc_day_prices
+    self.btc_hour_prices = btc_hour_prices
 
   def run(self):
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;} </style>', unsafe_allow_html=True)
@@ -18,7 +22,16 @@ class ChartOverviewComponent:
     c1, c2 = st.columns([1, 4])
 
     with c1:
-      ChartDailyComponent(self.day_prices, self.date).run()
+      ChartDailyComponent(self.week_prices, self.day_prices, self.date).run()
     with c2:
       ChartHourComponent(self.hour_prices, self.day_prices, self.date).run()
+
+    with c1:
+      ChartDailyComponent(
+          self.btc_week_prices, self.btc_day_prices, self.date).run()
+    with c2:
+      ChartHourComponent(self.btc_hour_prices,
+                         self.btc_day_prices, self.date).run()
+
+    st.write('_________________________________________________')
 

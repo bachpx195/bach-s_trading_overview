@@ -18,9 +18,13 @@ class HomeApp(HydraHeadApp):
       st.write('HI, IM A TRADER!')
 
       merchandise_rate, record_limit, start_date, end_date, list_day, weekday = SearchOption().run()
-      day_prices, hour_prices = GetDataService(
+      week_prices, day_prices, hour_prices = GetDataService(
          merchandise_rate, record_limit, start_date, end_date, list_day).run()
+      
+      btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
+          'BTCUSDT', record_limit, start_date, end_date, list_day).run()
 
+      RawData(week_prices, "Hiển thị data tuần").run()
       RawData(day_prices, "Hiển thị data ngày").run()
       RawData(hour_prices, "Hiển thị data giờ").run()
       
@@ -34,5 +38,13 @@ class HomeApp(HydraHeadApp):
          if date_name(date) not in weekday:
             continue
 
-         ChartOverviewComponent(day_prices, hour_prices, date).run()
+         ChartOverviewComponent(
+            week_prices, 
+            day_prices, 
+            hour_prices, 
+            btc_week_prices,
+            btc_day_prices, 
+            btc_hour_prices, 
+            date,
+         ).run()
 

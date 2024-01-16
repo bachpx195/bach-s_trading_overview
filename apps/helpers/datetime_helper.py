@@ -1,11 +1,12 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 
+FORMAT_DATE_YEAR = "%Y-%m-%d"
+
 def next_day(date):
   return (to_date(date) + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
-
-def previous_day(date, format="%Y-%m-%d"):
+def previous_day(date, format=FORMAT_DATE_YEAR):
   return (to_date(date) - datetime.timedelta(days=1)).strftime(format)
 
 def next_month(month):
@@ -17,10 +18,10 @@ def previous_month(month):
   return (date - relativedelta(months=+1)).strftime('%m')
 
 def to_date(date_str):
-  return datetime.datetime.strptime(date_str, "%Y-%m-%d")
+  return datetime.datetime.strptime(date_str, FORMAT_DATE_YEAR)
 
 def to_str(date):
-  return date.strftime("%Y-%m-%d")
+  return date.strftime(FORMAT_DATE_YEAR)
 
 def day_week_name(date_str):
   return to_date(date_str).strftime("%A")
@@ -30,3 +31,18 @@ def date_with_name(date_str):
 
 def date_name(date_str):
   return to_date(date_str).strftime("%A")
+
+# Lấy ngày bắt đầu của tuần dựa vào ngày truyền vào
+def get_start_of_week(today):
+  start = today - datetime.timedelta(days=today.weekday())
+  return start.strftime(FORMAT_DATE_YEAR)
+
+def get_list_day_of_week(today):
+  start = today - datetime.timedelta(days=today.weekday())
+  list_dates = []
+  next_day = start
+  while next_day != today:
+    list_dates.append(next_day.strftime(FORMAT_DATE_YEAR))
+    next_day = next_day + datetime.timedelta(days=1)
+  list_dates.append(today.strftime(FORMAT_DATE_YEAR))
+  return list_dates

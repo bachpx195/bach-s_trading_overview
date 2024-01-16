@@ -11,4 +11,7 @@ class RawData:
       text = self.text
     if st.button(text):
       st.dataframe(self.df)
-      print(self.df.sample(10).to_dict())
+      if len(self.df) > 10:
+        print(self.df.sample(10).to_dict())
+      else:
+        print(self.df.to_dict())
