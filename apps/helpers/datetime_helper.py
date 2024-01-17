@@ -4,10 +4,13 @@ from dateutil.relativedelta import relativedelta
 FORMAT_DATE_YEAR = "%Y-%m-%d"
 
 def next_day(date):
-  return (to_date(date) + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+  return (to_date(date) + datetime.timedelta(days=1)).strftime(FORMAT_DATE_YEAR)
 
 def previous_day(date, format=FORMAT_DATE_YEAR):
   return (to_date(date) - datetime.timedelta(days=1)).strftime(format)
+
+def previous_week(date):
+  return to_date(date) - datetime.timedelta(weeks=1)
 
 def next_month(month):
   date = to_date(f"2020-{month}-01")

@@ -9,6 +9,7 @@ class SearchOption:
     self.end_date = None
     self.list_day = None
     self.weekday = LIST_DAY_IN_WEEK
+    self.diff_with_btc = False
 
   def run(self):
     # config css
@@ -21,8 +22,9 @@ class SearchOption:
     self.select_record_limit()
     self.select_day()
     self.select_week_day()
+    self.checkbox_diff_with_btc()
 
-    return self.merchandise_rate, self.record_limit, self.start_date, self.end_date, self.list_day, self.weekday
+    return self.merchandise_rate, self.record_limit, self.start_date, self.end_date, self.list_day, self.weekday, self.diff_with_btc
 
   def select_merchandise_rate(self):
     c1,_ = st.columns([2, 2])
@@ -76,4 +78,6 @@ class SearchOption:
           placeholder="2023-12-20, 2023-12-21, ..."
         )
 
+  def checkbox_diff_with_btc(self):
+    self.diff_with_btc = st.checkbox("So sánh với chart BTC")
     

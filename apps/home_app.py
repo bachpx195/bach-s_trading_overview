@@ -17,16 +17,23 @@ class HomeApp(HydraHeadApp):
    def run(self):
       st.write('HI, IM A TRADER!')
 
-      merchandise_rate, record_limit, start_date, end_date, list_day, weekday = SearchOption().run()
+      merchandise_rate, record_limit, start_date, end_date, list_day, weekday, diff_with_btc = SearchOption().run()
       week_prices, day_prices, hour_prices = GetDataService(
          merchandise_rate, record_limit, start_date, end_date, list_day).run()
       
-      btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
-          'BTCUSDT', record_limit, start_date, end_date, list_day).run()
+      if diff_with_btc:
+         btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
+            'BTCUSDT', record_limit, start_date, end_date, list_day).run()
+      else:
+         btc_week_prices = None
+         btc_day_prices = None
+         btc_hour_prices = None
 
-      RawData(week_prices, "Hiển thị data tuần").run()
-      RawData(day_prices, "Hiển thị data ngày").run()
-      RawData(hour_prices, "Hiển thị data giờ").run()
+         
+
+      # RawData(week_prices, "Hiển thị data tuần").run()
+      # RawData(day_prices, "Hiển thị data ngày").run()
+      # RawData(hour_prices, "Hiển thị data giờ").run()
       
       if list_day is None:
          list_day = day_prices.day.to_list()
@@ -41,10 +48,11 @@ class HomeApp(HydraHeadApp):
          ChartOverviewComponent(
             week_prices, 
             day_prices, 
-            hour_prices, 
+            hour_prices,
+            date,
+            diff_with_btc,
             btc_week_prices,
             btc_day_prices, 
             btc_hour_prices, 
-            date,
          ).run()
 

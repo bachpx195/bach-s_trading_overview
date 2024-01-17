@@ -12,13 +12,10 @@ class ChartHourComponent:
     self.date = date
 
   def set_day_dataframe(self, day_prices, date):
-    day_ohlc_alt = day_prices[(
-        day_prices['day'] == previous_day(date))].values.tolist()[0]
-    day_df_alt = pd.DataFrame(
-        [day_ohlc_alt], columns=day_prices.columns)
-    day_df_alt = day_df_alt.set_index(pd.DatetimeIndex([f"{previous_day(date)} 00:00:00+00:00"]))
+    day_ohlc = day_prices[(
+        day_prices['day'] == previous_day(date))]
 
-    return day_df_alt
+    return day_ohlc
   
   def set_hour_dataframe(self, hour_prices, date):
     return hour_prices[hour_prices['date_with_binane'] == pd.to_datetime(date).date()]
