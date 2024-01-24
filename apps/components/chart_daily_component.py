@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from apps.helpers.datetime_helper import get_list_day_of_week, get_start_of_week, to_date, previous_week, FORMAT_DATE_YEAR
-from apps.helpers.constants import CHART_CONFIG
+from apps.helpers.constants import CHART_CONFIG, CHART_HEIGHT
 
 
 class ChartDailyComponent:
@@ -26,7 +26,7 @@ class ChartDailyComponent:
 
     tickvals =[k*0.5 for k in range(len(df))]
     ticktext = list(
-        (f"{date.to_pydatetime().strftime('%m-%d')}" for date in df.index))
+        (f"{date.to_pydatetime().strftime('%m-%d')} {round(df.loc[date].return_oc, 2)}" for date in df.index))
 
     fig = go.Figure(data=[go.Candlestick(x=tickvals,
                     open=df['open'], high=df['high'],
@@ -38,7 +38,7 @@ class ChartDailyComponent:
     fig.add_vline(x=0.3, line_width=2, line_dash="dash", line_color="green")
     fig.add_vline(x=3.9, line_width=2, line_dash="dash", line_color="green")
 
-    fig.update_layout(xaxis_rangeslider_visible=False,height=500, xaxis_tickvals=tickvals,
-                      xaxis_ticktext=ticktext, xaxis=dict(showgrid=False), yaxis=dict(showgrid=False))
+    fig.update_layout(xaxis_rangeslider_visible=False, height=CHART_HEIGHT, xaxis_tickvals=tickvals,
+                      xaxis_ticktext=ticktext, xaxis=dict(showgrid=False), yaxis=dict(showgrid=False), margin={"l":0,"r":0,"t":0,"b":0})
 
     st.plotly_chart(fig, use_container_width=True, config=CHART_CONFIG)

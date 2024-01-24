@@ -33,4 +33,12 @@ LIST_DAY_IN_WEEK = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
 ]
 
-CHART_CONFIG = {'displayModeBar': False, 'responsive': False}
+CHART_CONFIG = {
+  'displayModeBar': False,
+  'responsive': False, 
+  'staticPlot': True, 
+  'displaylogo': False,
+  'modeBarButtonsToRemove': ['zoom', 'autoScale']
+}
+
+CHART_HEIGHT = 300

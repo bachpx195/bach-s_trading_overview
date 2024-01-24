@@ -68,6 +68,7 @@ def load_week_data(merchandise_rate, start_date, end_date):
                             sort="DESC", start_date=start_date, end_date=end_date)
 
   prices = candlestick.to_df()
+  prices = add_return_column(prices)
 
   return prices
 
