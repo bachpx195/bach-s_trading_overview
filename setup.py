@@ -14,5 +14,6 @@ setuptools.setup(
         'hydralit_components>=1.0.7',
         'validators',
         'bokeh',
+        'plotly',
     ],
 )

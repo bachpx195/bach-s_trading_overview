@@ -1,5 +1,5 @@
 import pandas as pd
-from myenv.database.pymysql_conn import DataBase
+from configs.database.pymysql_conn import DataBase
 
 db = DataBase()
 INTERVAL_HASH = {"day": 1, "week": 2}
