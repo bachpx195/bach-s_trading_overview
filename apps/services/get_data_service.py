@@ -18,10 +18,10 @@ class GetDataService:
       self.list_day = None
 
   def run(self):
-    day_prices, start_of_week, end_date = load_day_data(self.merchandise_rate,
+    day_prices = load_day_data(self.merchandise_rate,
         self.record_limit, self.start_date, self.end_date, self.list_day)
     week_prices = load_week_data(
-        self.merchandise_rate, start_of_week, end_date)
+        self.merchandise_rate)
     hour_prices = load_hour_data(self.merchandise_rate,
         self.record_limit*24, self.start_date, self.end_date, self.list_day)
         
@@ -59,13 +59,13 @@ def load_day_data(merchandise_rate, record_limit, start_date, end_date, list_day
   prices = add_day_column(prices)
   prices = add_day_name_column(prices)
 
-  return prices, start_date, end_date
+  return prices
 
 
 @st.cache_data
-def load_week_data(merchandise_rate, start_date, end_date):
+def load_week_data(merchandise_rate):
   candlestick = Candlestick(merchandise_rate, 'week',
-                            sort="DESC", start_date=start_date, end_date=end_date)
+                            sort="DESC", limit=100)
 
   prices = candlestick.to_df()
   prices = add_return_column(prices)

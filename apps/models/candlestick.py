@@ -29,7 +29,7 @@ class Candlestick:
             sql_query = 'SELECT * FROM DailyTradingJournal_development.candlesticks WHERE '
         if self.start_date and self.end_date:
             sql_query = sql_query + \
-                f"(candlesticks.date BETWEEN '{self.start_date} 17:00:00' AND '{self.end_date} 16:59:59') AND "
+                f"(candlesticks.date BETWEEN '{self.start_date} 00:00:00' AND '{self.end_date} 23:23:59') AND "
         if self.list_day:
             if len(self.list_day) == 1:
                 sql_query = sql_query + \
@@ -64,9 +64,9 @@ class Candlestick:
         if self.join_analytic_table:
             if self.join_analytic_table == 'hour_analytics':
                 columns = ['date', 'open', 'high', 'close',
-                        'low', 'volumn', 'date_with_binane', 'hour', 'return_oc', 'return_hl',
+                        'low', 'volumn', 'date_database', 'date_with_binane', 'hour', 'return_oc', 'return_hl',
                         'candlestick_type', 'range_type', 'is_highest_hour_return', 'is_reverse_increase_hour', 'is_reverse_decrease_hour',
-                        'is_same_btc', 'continue_by_day', 'continue_by_hour']
+                        'is_same_btc', 'continue_by_day']
                 datas = list(db.cur.fetchall())
                 data = [(da[8], da[3], da[4], da[5], da[6], da[9], da[16], da[17], da[18], da[19], da[20], da[21], da[22], da[23], da[24], da[25], da[26], da[27])
                     for da in datas]
