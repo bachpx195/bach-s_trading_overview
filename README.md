@@ -10,6 +10,13 @@ pip install .
 
 ## Run
 ```shellscript
+
+<!-- MACOS -->
 source .venv/bin/activate
 streamlit run main.py --logger.level=debug
+
+
+<!-- UBUNTU -->
+source .venv/bin/activate
+python3 -m streamlit run main.py --logger.level=debug
 ```
