@@ -15,5 +15,7 @@ setuptools.setup(
         'validators',
         'bokeh',
         'plotly',
+        'numpy',
+        'matplotlib'
     ],
 )

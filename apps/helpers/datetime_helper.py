@@ -24,6 +24,8 @@ def to_date(date_str):
   return datetime.datetime.strptime(date_str, FORMAT_DATE_YEAR)
 
 def to_str(date):
+  if type(date) == str:
+    return date
   return date.strftime(FORMAT_DATE_YEAR)
 
 def day_week_name(date_str):

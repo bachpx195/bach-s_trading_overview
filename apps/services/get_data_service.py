@@ -3,7 +3,7 @@ import streamlit as st
 from apps.models.candlestick import Candlestick
 from apps.models.merchandise_rate import MerchandiseRate
 from apps.services.ochl_dataframe import *
-from apps.helpers.datetime_helper import previous_day, get_start_of_week
+from apps.helpers.datetime_helper import previous_day, get_start_of_week, to_date
 
 
 class GetDataService:
@@ -18,10 +18,10 @@ class GetDataService:
       self.list_day = None
 
   def run(self):
-    day_prices, start_of_week, end_date = load_day_data(self.merchandise_rate,
+    day_prices = load_day_data(self.merchandise_rate,
         self.record_limit, self.start_date, self.end_date, self.list_day)
     week_prices = load_week_data(
-        self.merchandise_rate, start_of_week, end_date)
+        self.merchandise_rate,self.start_date, self.end_date)
     hour_prices = load_hour_data(self.merchandise_rate,
         self.record_limit*24, self.start_date, self.end_date, self.list_day)
         
@@ -50,7 +50,8 @@ def load_day_data(merchandise_rate, record_limit, start_date, end_date, list_day
 
   prices = candlestick.to_df()
   first_date = prices.iloc[-1].name
-  end_date = prices.iloc[0].name
+  end_date = prices.iloc[0].name.replace(tzinfo=None)
+
   start_date = get_start_of_week(first_date)
   candlestick = Candlestick(merchandise_rate, 'day', limit=record_limit,
                             sort="DESC", start_date=start_date, end_date=end_date, list_day=list_day)
@@ -59,13 +60,14 @@ def load_day_data(merchandise_rate, record_limit, start_date, end_date, list_day
   prices = add_day_column(prices)
   prices = add_day_name_column(prices)
 
-  return prices, start_date, end_date
+  return prices
 
 
 @st.cache_data
-def load_week_data(merchandise_rate, start_date, end_date):
+def load_week_data(merchandise_rate,first_date,end_date):
+  start_date = get_start_of_week(to_date(first_date))
   candlestick = Candlestick(merchandise_rate, 'week',
-                            sort="DESC", start_date=start_date, end_date=end_date)
+                            sort="DESC", limit=100, start_date=start_date, end_date=end_date)
 
   prices = candlestick.to_df()
   prices = add_return_column(prices)

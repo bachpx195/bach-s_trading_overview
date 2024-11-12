@@ -32,11 +32,12 @@ class ChartDailyComponent:
                     open=df['open'], high=df['high'],
                     low=df['low'], close=df['close'], hovertext=df['return_oc'])])
     
-    fig.add_hline(y=self.week_df['low'].values[0], line_width=1, line_color="pink")
-    fig.add_hline(y=self.week_df['high'].values[0], line_width=1, line_color="green")
-    fig.add_hline(y=self.week_df['close'].values[0], line_width=1, line_color="red")
-    fig.add_vline(x=0.3, line_width=2, line_dash="dash", line_color="green")
-    fig.add_vline(x=3.9, line_width=2, line_dash="dash", line_color="green")
+    if self.week_df['low'].size != 0 and self.week_df['high'].size != 0 and self.week_df['close'].size != 0:
+      fig.add_hline(y=self.week_df['low'].values[0], line_width=1, line_color="pink")
+      fig.add_hline(y=self.week_df['high'].values[0], line_width=1, line_color="green")
+      fig.add_hline(y=self.week_df['close'].values[0], line_width=1, line_color="red")
+      fig.add_vline(x=0.3, line_width=2, line_dash="dash", line_color="green")
+      fig.add_vline(x=3.9, line_width=2, line_dash="dash", line_color="green")
 
     fig.update_layout(xaxis_rangeslider_visible=False, height=CHART_HEIGHT, xaxis_tickvals=tickvals,
                       xaxis_ticktext=ticktext, xaxis=dict(showgrid=False), yaxis=dict(showgrid=False), margin={"l":0,"r":0,"t":0,"b":0})

@@ -36,9 +36,8 @@ LIST_DAY_IN_WEEK = [
 CHART_CONFIG = {
   'displayModeBar': False,
   'responsive': False, 
-  'staticPlot': True, 
   'displaylogo': False,
   'modeBarButtonsToRemove': ['zoom', 'autoScale']
 }
 
-CHART_HEIGHT = 300
+CHART_HEIGHT = 260
