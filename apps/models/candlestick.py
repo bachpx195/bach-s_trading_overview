@@ -8,17 +8,20 @@ db = DataBase()
 INTERVAL_HASH = {"day": 1, "week": 2, "month": 3, "hour": 4, "15m": 5}
 
 class Candlestick:
-    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, list_day=None):
+    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, list_day=None, month=None):
         self.limit = limit if limit else 100000
         self.interval = interval
         self.merchandise_rate_id = merchandise_rate_id
         self.sort = sort
         self.start_date = start_date
         self.end_date = end_date
+        self.month = month
         if interval == 'day':
             self.join_analytic_table = 'day_analytics'
         elif interval == 'hour':
             self.join_analytic_table = 'hour_analytics'
+        elif interval == 'month':
+            self.join_analytic_table = 'analytic_months'
         else:
             self.join_analytic_table = None
         self.list_day = list_day
@@ -35,7 +38,7 @@ class Candlestick:
             if self.list_day:
                 if len(self.list_day) == 1:
                     sql_query = sql_query + \
-                        f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') AND "
+                        f"(candlesticks.date BETWEEN '{self.list_day[0]} 00:00:00' AND '{self.list_day[0]} 23:23:59') AND "
                 else:
                     for idx, day in enumerate(self.list_day):
                         if idx == len(self.list_day) - 1:
@@ -47,6 +50,9 @@ class Candlestick:
                         else:
                             sql_query = sql_query + \
                                 f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
+            if self.month:
+                sql_query = sql_query + \
+                        f"MONTH(candlesticks.date) = {self.month} AND "
             if self.interval:
                 sql_query = sql_query + \
                     f"candlesticks.time_type = {INTERVAL_HASH[self.interval]} AND "
@@ -77,7 +83,11 @@ class Candlestick:
                     datas = list(db.cur.fetchall())
                     data = [(da[8], da[3], da[4], da[5], da[6], da[9], da[18], da[19], da[20], da[26], da[27])
                             for da in datas]
-            
+                if self.join_analytic_table == 'analytic_months':
+                    columns = ['date', 'open', 'high', 'close', 'low', 'volumn', 'month', 'year', 'return_oc', 'return_hl', 'candlestick_type']
+                    datas = list(db.cur.fetchall())
+                    data = [(da[8], da[3], da[4], da[5], da[6], da[9], da[16], da[17], da[20], da[21], da[18])
+                            for da in datas]
             else:
                 columns = ['date', 'open', 'high', 'close', 'low', 'volumn']
                 datas = list(db.cur.fetchall())
