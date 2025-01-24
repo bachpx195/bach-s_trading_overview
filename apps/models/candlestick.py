@@ -8,7 +8,7 @@ db = DataBase()
 INTERVAL_HASH = {"day": 1, "week": 2, "month": 3, "hour": 4, "15m": 5}
 
 class Candlestick:
-    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, list_day=None, month=None):
+    def __init__(self, merchandise_rate_id, interval="day", limit=None, sort="ASC", start_date=None, end_date=None, list_day=None, month=None, context=None):
         self.limit = limit if limit else 100000
         self.interval = interval
         self.merchandise_rate_id = merchandise_rate_id
@@ -16,6 +16,7 @@ class Candlestick:
         self.start_date = start_date
         self.end_date = end_date
         self.month = month
+        self.context = context
         if interval == 'day':
             self.join_analytic_table = 'day_analytics'
         elif interval == 'hour':
@@ -24,14 +25,25 @@ class Candlestick:
             self.join_analytic_table = 'analytic_months'
         else:
             self.join_analytic_table = None
+        
+        if interval == 'week':
+            self.join_master_table = 'week_masters'
+        else:
+            self.join_master_table = None
+            
         self.list_day = list_day
 
     def to_df(self):
+        if self.context:
+            log(self.context, 'Context')
         try:
             if self.join_analytic_table:
                 sql_query = f"SELECT * FROM DailyTradingJournal_development.candlesticks candlesticks INNER JOIN DailyTradingJournal_development.{self.join_analytic_table} ON candlesticks.id = {self.join_analytic_table}.candlestick_id WHERE "
+            elif self.join_master_table:
+                sql_query = f"SELECT * FROM DailyTradingJournal_development.candlesticks candlesticks INNER JOIN DailyTradingJournal_development.{self.join_master_table} ON candlesticks.date = {self.join_master_table}.start_date WHERE "
             else:
                 sql_query = 'SELECT * FROM DailyTradingJournal_development.candlesticks WHERE '
+                
             if self.start_date and self.end_date:
                 sql_query = sql_query + \
                     f"(candlesticks.date BETWEEN '{self.start_date} 00:00:00' AND '{self.end_date} 23:23:59') AND "
@@ -51,8 +63,12 @@ class Candlestick:
                             sql_query = sql_query + \
                                 f"(candlesticks.date BETWEEN '{day} 00:00:00' AND '{day} 23:23:59') OR "
             if self.month:
-                sql_query = sql_query + \
-                        f"MONTH(candlesticks.date) = {self.month} AND "
+                if self.join_master_table:
+                    sql_query = sql_query + \
+                            f"(MONTH(candlesticks.date) = {self.month} OR week_masters.overlap_month = {self.month}) AND "
+                else:
+                    sql_query = sql_query + \
+                            f"MONTH(candlesticks.date) IN ({self.month}) AND "
             if self.interval:
                 sql_query = sql_query + \
                     f"candlesticks.time_type = {INTERVAL_HASH[self.interval]} AND "
@@ -88,6 +104,12 @@ class Candlestick:
                     datas = list(db.cur.fetchall())
                     data = [(da[8], da[3], da[4], da[5], da[6], da[9], da[16], da[17], da[20], da[21], da[18])
                             for da in datas]
+            elif self.join_master_table:
+                if self.join_master_table == 'week_masters':
+                    columns = ['date', 'open', 'high', 'close', 'low', 'volumn', 'month', 'year', 'overlap_month', 'number_in_month']
+                datas = list(db.cur.fetchall())
+                data = [(da[8], da[3], da[4], da[5], da[6], da[9], da[15], da[16], da[17], da[18])
+                        for da in datas]
             else:
                 columns = ['date', 'open', 'high', 'close', 'low', 'volumn']
                 datas = list(db.cur.fetchall())
@@ -102,5 +124,5 @@ class Candlestick:
                 log("**************data frame is null**************")
             df.set_index('date', inplace=True)
             return df
-        except:
-            log("Candlestick exception")
+        except Exception as e:
+            log(str(e), 'Exception')

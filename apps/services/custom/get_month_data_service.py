@@ -10,57 +10,19 @@ class GetMonthDataService:
   def __init__(self, merchandise_rate, month):
     self.merchandise_rate = MerchandiseRate().find_by_slug(merchandise_rate)
     self.month = month
-    # self.record_limit = record_limit
-    # self.start_date = start_date
-    # self.end_date = end_date
-    # if list_day:
-    #   self.list_day = self.set_list_day(list_day)
-    # else:
-    #   self.list_day = None
 
   def run(self):
-    # day_prices = load_day_data(self.merchandise_rate,
-    #     self.record_limit, self.start_date, self.end_date, self.list_day)
-    # week_prices = load_week_data(
-    #     self.merchandise_rate,self.start_date, self.end_date)
-    # hour_prices = load_hour_data(self.merchandise_rate,
-    #     self.record_limit*24, self.start_date, self.end_date, self.list_day)
+    month_with_previous_month_prices = load_month_data(self.merchandise_rate, self.month)
+    month_prices = month_with_previous_month_prices[month_with_previous_month_prices["month"] == self.month]
+    day_prices =  load_day_data(self.merchandise_rate, self.month)
+    return month_prices, month_with_previous_month_prices, day_prices
 
-    month_prices = load_month_data(self.merchandise_rate, self.month)
-    return month_prices
-  
-  def set_list_day(self, list_day):
-    list_custom_day = []
-
-    for date in list_day.split(','):
-      date_str = date.strip()
-      if date_str not in list_custom_day:
-        list_custom_day.append(date_str)
-      previous = previous_day(date_str)
-      if previous not in list_custom_day:
-        list_custom_day.append(previous)
-      previous_previous = previous_day(previous)
-      if previous_previous not in list_custom_day:
-        list_custom_day.append(previous_previous)
-
-    return list_custom_day
 
 @st.cache_data
-def load_day_data(merchandise_rate, record_limit, start_date, end_date, list_day):
-  candlestick = Candlestick(merchandise_rate, 'day', limit=record_limit,
-                            sort="DESC", start_date=start_date, end_date=end_date, list_day=list_day)
-
-  prices = candlestick.to_df()
-  first_date = prices.iloc[-1].name
-  end_date = prices.iloc[0].name.replace(tzinfo=None)
-
-  start_date = get_start_of_week(first_date)
-  candlestick = Candlestick(merchandise_rate, 'day', limit=record_limit,
-                            sort="DESC", start_date=start_date, end_date=end_date, list_day=list_day)
+def load_day_data(merchandise_rate, month):
+  candlestick = Candlestick(merchandise_rate, 'day', sort="DESC", month=month)
   prices = candlestick.to_df()
   prices = add_return_column(prices)
-  prices = add_day_column(prices)
-  prices = add_day_name_column(prices)
 
   return prices
 
@@ -69,7 +31,7 @@ def load_day_data(merchandise_rate, record_limit, start_date, end_date, list_day
 def load_week_data(merchandise_rate,first_date,end_date):
   start_date = get_start_of_week(to_date(first_date))
   candlestick = Candlestick(merchandise_rate, 'week',
-                            sort="DESC", limit=100, start_date=start_date, end_date=end_date)
+                            sort="DESC", start_date=start_date, end_date=end_date)
 
   prices = candlestick.to_df()
   prices = add_return_column(prices)
@@ -88,7 +50,8 @@ def load_hour_data(merchandise_rate, record_limit, start_date, end_date, list_da
 
 @st.cache_data
 def load_month_data(merchandise_rate, month):
-  candlestick = Candlestick(merchandise_rate, 'month', month=month)
+  month_list = f"{month - 2 if month - 2 > 0 else 12 +  month - 2 },{month - 1 if month - 1 > 0 else 12 +  month - 1 },{month}"
+  candlestick = Candlestick(merchandise_rate, 'month', month=month_list)
 
   prices = candlestick.to_df()
 

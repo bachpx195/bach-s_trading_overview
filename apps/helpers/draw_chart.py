@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from apps.helpers.datetime_helper import next_day
 from apps.helpers.utils import max_high_and_low, refactor_list_of_float, find_highest_and_lower_hour
 
@@ -375,3 +376,26 @@ def draw_inside_and_outside_week_bar_chart(n_groups, max_in_week, min_in_week):
   plt.tight_layout()
 
   return plt
+
+
+def draw_month_return_heatmap(month_return, return_col):
+  month_return_arr =[]
+  year_list = -np.sort(-np.unique(month_return['year'].values))
+  for year in year_list:
+    year_arr = []
+    for month in range(1,13):
+      return_values = month_return[(month_return['year'] == year) & (month_return['month'] == month)][return_col].values
+      if return_values.size > 0:
+        year_arr.append(return_values[0])
+      else:
+        year_arr.append(0)
+     
+    month_return_arr.append(year_arr)
+    
+  fig, ax = plt.subplots(figsize=[20,10])
+  if return_col == "return_hl":
+    ax = sns.heatmap(month_return_arr, fmt=".1f", vmax=100,annot=True, cmap="YlGn", ax=ax , xticklabels=range(1,13), yticklabels=year_list)
+  else:
+    ax = sns.heatmap(month_return_arr,center=0,vmin=-100,vmax=100, fmt=".1f", annot=True, cmap="PiYG", ax=ax , xticklabels=range(1,13), yticklabels=year_list)
+
+  return fig

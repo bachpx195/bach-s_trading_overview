@@ -16,6 +16,7 @@ setuptools.setup(
         'bokeh',
         'plotly',
         'numpy',
-        'matplotlib'
+        'matplotlib',
+        'seaborn'
     ],
 )
