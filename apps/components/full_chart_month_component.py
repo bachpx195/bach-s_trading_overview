@@ -21,7 +21,7 @@ class FullChartMonthComponent:
     fig = go.Figure(data=[go.Candlestick(x=tickvals,
                     open=df['open'], high=df['high'],
                     low=df['low'], close=df['close'], hovertext=list(
-        (f"{date.to_pydatetime().strftime('%d')} {round(df.loc[date].return_oc, 2)}" for date in df.index)))])
+        (f"{date.to_pydatetime().strftime('%m')} {round(df.loc[date].return_oc, 2)}" for date in df.index)))])
     
 
     fig.add_vline(x=3.9, line_width=2, line_dash="dash", line_color="green")
