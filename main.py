@@ -52,24 +52,25 @@ def layout():
     week_prices = GetDataService(f"{merchandise}USDT",None, None,None, None, month).get_week_in_month_data()
     year_list = -np.sort(-np.unique(week_prices['year'].values))
     for year in year_list:
-      st.write(year)
-      if month == 2:
-        month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == 1) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
-        previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
-      elif month == 1:
-        month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 11) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
-        previous_month_prices = month_in_year_prices[(month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 12)]
-      else:
-        month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month)]
-        previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
-      week_in_month_prices = week_prices[(week_prices['year'] == year) & ((week_prices['month'] == month) | (week_prices['overlap_month'] == month))]
-      day_in_month_prices = day_prices[day_prices.index.year == year]
-      c1, c2 = st.columns([1, 2])
-      with c1:
-        FullChartMonthComponent(month_in_year_prices).run()
-      with c2:
-        ChartWeekComponent(previous_month_prices, week_in_month_prices).run()
-        ChartMonthDailyComponent(previous_month_prices, day_in_month_prices).run()
+      show = st.checkbox(f"{year}", value=True)
+      if show:
+        if month == 2:
+          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == 1) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
+          previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
+        elif month == 1:
+          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 11) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
+          previous_month_prices = month_in_year_prices[(month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 12)]
+        else:
+          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month)]
+          previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
+        week_in_month_prices = week_prices[(week_prices['year'] == year) & ((week_prices['month'] == month) | (week_prices['overlap_month'] == month))]
+        day_in_month_prices = day_prices[day_prices.index.year == year]
+        c1, c2 = st.columns([1, 2])
+        with c1:
+          FullChartMonthComponent(month_in_year_prices).run()
+        with c2:
+          ChartWeekComponent(previous_month_prices, week_in_month_prices).run()
+          ChartMonthDailyComponent(previous_month_prices, day_in_month_prices).run()
   except Exception as e:
     log(str(e), 'Exception')
 
