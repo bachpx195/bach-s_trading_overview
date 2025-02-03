@@ -1,69 +1,17 @@
 import streamlit as st
 from apps.services.get_data_service import GetDataService
 from apps.components.chart_overview_component import ChartOverviewComponent
-from apps.helpers.datetime_helper import to_date, next_day, previous_day, to_str
+from apps.helpers.datetime_helper import to_str
+from apps.helpers.list_date_constants import *
 
 MENU_LAYOUT = [1, 1, 1, 7, 2]
 CONFIG = {'displayModeBar': False, 'responsive': False}
-MERCHANDISE = "DOT"
-OTHER_MERCHANDISES = ["LTC"]
+MERCHANDISE = "LTC"
+# OTHER_MERCHANDISES = ["LINK"]
 SHOW_OTHER_MERCHANDISES = False
 
 # Them *** voi cac ngay phu hop
-LIST_DATE = (
-#   "2023-10-07",
-#   "2023-10-14",
-#   "2023-10-21",
-#   "2023-10-28",
-#   "2023-11-04",
-#   "2023-11-11",
-#   "2023-11-18",
-#   "2023-11-25",
-#   "2023-12-02",
-#   "2023-12-09",
-#   "2023-12-16",
-#   "2023-12-23",
-#   "2023-12-30",
-#   "2024-01-06",
-#   "2024-01-13",
-#   "2024-01-20",
-#   "2024-01-27",
-#   "2024-02-03",
-#   "2024-02-10",
-#   "2024-02-17",
-#   "2024-02-24",
-#   "2024-03-02",
-#   "2024-03-09",
-#   "2024-03-16",
-#   "2024-03-23",
-#   "2024-03-30"
-"2020-10-03",
-"2020-10-10",
-"2020-10-17",
-"2020-10-24",
-"2020-10-31",
-"2020-11-07",
-"2020-11-14",
-"2020-11-21",
-"2020-11-28",
-"2020-12-05",
-"2020-12-12",
-"2020-12-19",
-"2020-12-26",
-"2021-01-02",
-"2021-01-09",
-"2021-01-16",
-"2021-01-23",
-"2021-01-30",
-"2021-02-06",
-"2021-02-13",
-"2021-02-20",
-"2021-02-27",
-"2021-03-06",
-"2021-03-13",
-"2021-03-20",
-"2021-03-27"
-)
+LIST_DATE = LIST_DATE_MONDAY_CRASH
 
 def run():
   st.set_page_config(layout="wide")
@@ -88,9 +36,9 @@ def layout_1():
 
   try:
     week_prices, day_prices, hour_prices = GetDataService(
-      f"{MERCHANDISE}USDT", 1000, START_DATE, END_DATE, None).run()
+      f"{MERCHANDISE}USDT", 100000, START_DATE, END_DATE, None).run()
     btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
-      'BTCUSDT', 1000, START_DATE, END_DATE, None).run()
+      'BTCUSDT', 100000, START_DATE, END_DATE, None).run()
     other_price_data = None
     if SHOW_OTHER_MERCHANDISES:
       other_price_data = {}
