@@ -1,19 +1,17 @@
 import streamlit as st
-import numpy as np
-from apps.services.custom.get_month_data_service import GetMonthDataService
 from apps.services.get_data_service import GetDataService
-from apps.components.full_chart_month_component import FullChartMonthComponent
-from apps.components.chart_week_component import ChartWeekComponent
-from apps.components.custom.chart_month_daily_component import ChartMonthDailyComponent
-from apps.helpers.constants import LIST_MONTH, LIST_MERCHANDISE
-from apps.helpers.draw_chart import draw_month_return_heatmap
-from apps.services.log_services import log
+from apps.components.chart_overview_component import ChartOverviewComponent
+from apps.helpers.datetime_helper import to_str
+from apps.helpers.list_date_constants import *
 
 MENU_LAYOUT = [1, 1, 1, 7, 2]
 CONFIG = {'displayModeBar': False, 'responsive': False}
 MERCHANDISE = "LTC"
-OTHER_MERCHANDISES = ["DOT"]
+# OTHER_MERCHANDISES = ["LINK"]
 SHOW_OTHER_MERCHANDISES = False
+
+# Them *** voi cac ngay phu hop
+LIST_DATE = LIST_FIRST_10_DAYS_OF_MONTH
 
 def run():
   st.set_page_config(layout="wide")
@@ -22,57 +20,138 @@ def run():
   st.write(
       '<style>div.st-bf{flex-direction:column;} div.st-ag{font-weight:bold;padding-left:2px;}</style>', unsafe_allow_html=True)
  
-  layout()
-  
+  # layout_1()
+  # layout_2()
+  layout_3()
 
-def layout():
-  merchandise = st.radio(
-          "Chọn coin: ", LIST_MERCHANDISE, index=1, horizontal=True)
+
+def layout_1():  
+#   date_select = st.radio(
+#     "Chọn ngày: ", LIST_DATE)
+#   date_select = date_select.replace("*", "")
   
-  month_return = GetDataService(f"{merchandise}USDT",None, None,None, None).get_month_return()
-    
-  c1, c2 = st.columns([2, 2])
-  with c1:
-    st.pyplot(draw_month_return_heatmap(month_return, 'return_hl'))
-  with c2:
-    st.pyplot(draw_month_return_heatmap(month_return, 'return_oc'))
-  
-  month = st.radio(
-          "Chọn tháng: ", LIST_MONTH, index=1, horizontal=True)
+  # date_select = st.date_input(label='Chọn ngày')
+
+  START_DATE = LIST_DATE[0]
+  END_DATE = LIST_DATE[-1]
 
   try:
-    month_prices, month_with_previous_month_prices, day_prices = GetMonthDataService(
-      f"{merchandise}USDT", month).run()
-    c1, c2 = st.columns([2, 2])
-    with c1:
-      st.bar_chart(month_prices, x="year", y=["return_oc"])
-    with c2:
-      st.bar_chart(month_prices, x="year", y=["return_hl"])
-      
-    week_prices = GetDataService(f"{merchandise}USDT",None, None,None, None, month).get_week_in_month_data()
-    year_list = -np.sort(-np.unique(week_prices['year'].values))
-    for year in year_list:
-      show = st.checkbox(f"{year}", value=True)
-      if show:
-        if month == 2:
-          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == 1) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
-          previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
-        elif month == 1:
-          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month) | (month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 11) | (month_with_previous_month_prices['year'] == (year - 1)) & (month_with_previous_month_prices['month'] == 12)]
-          previous_month_prices = month_in_year_prices[(month_with_previous_month_prices['year'] == (year-1)) & (month_with_previous_month_prices['month'] == 12)]
-        else:
-          month_in_year_prices = month_with_previous_month_prices[(month_with_previous_month_prices['year'] == year) & (month_with_previous_month_prices['month'] == month)]
-          previous_month_prices = month_in_year_prices[(month_in_year_prices['year'] == year) & (month_in_year_prices['month'] == (month -1))]
-        week_in_month_prices = week_prices[(week_prices['year'] == year) & ((week_prices['month'] == month) | (week_prices['overlap_month'] == month))]
-        day_in_month_prices = day_prices[day_prices.index.year == year]
-        c1, c2 = st.columns([1, 2])
-        with c1:
-          FullChartMonthComponent(month_in_year_prices).run()
-        with c2:
-          ChartWeekComponent(previous_month_prices, week_in_month_prices).run()
-          ChartMonthDailyComponent(previous_month_prices, day_in_month_prices).run()
-  except Exception as e:
-    log(str(e), 'Exception')
+    week_prices, day_prices, hour_prices = GetDataService(
+      f"{MERCHANDISE}USDT", 100000, START_DATE, END_DATE, None).run()
+    btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
+      'BTCUSDT', 100000, START_DATE, END_DATE, None).run()
+    other_price_data = None
+    if SHOW_OTHER_MERCHANDISES:
+      other_price_data = {}
+      for om in OTHER_MERCHANDISES:
+        om_week_prices, om_day_prices, om_hour_prices = GetDataService(
+            f"{om}USDT", 1000, START_DATE, END_DATE, None).run()
+        other_price_data[om] = {
+            'week_prices': om_week_prices,
+            'day_prices': om_day_prices,
+            'hour_prices': om_hour_prices
+        }
+
+    for date in day_prices.day.to_list():
+        if to_str(date) in LIST_DATE:
+            ChartOverviewComponent(
+                MERCHANDISE,
+                week_prices,
+                day_prices,
+                hour_prices,
+                date,
+                True,
+                btc_week_prices,
+                btc_day_prices,
+                btc_hour_prices,
+                SHOW_OTHER_MERCHANDISES,
+                other_price_data
+            ).run()
+  except IndexError:
+    st.write(
+      f"Ngay chua co data.")
+
+# Draw danh cac ngay theo khung thoi gian lon
+def layout_2():
+  from apps.components.full_chart_overview_component import FullChartOverviewComponent
+
+  #   date_select = st.radio(
+  #     "Chọn ngày: ", LIST_DATE)
+  #   date_select = date_select.replace("*", "")
+  
+  # date_select = st.date_input(label='Chọn ngày')
+
+  START_DATE = LIST_DATE[0]
+  END_DATE = LIST_DATE[-1]
+
+  try:
+    week_prices, day_prices, hour_prices = GetDataService(
+      f"{MERCHANDISE}USDT", 1000, START_DATE, END_DATE, None).run()
+    btc_week_prices, btc_day_prices, btc_hour_prices = GetDataService(
+      'BTCUSDT', 1000, START_DATE, END_DATE, None).run()
+    other_price_data = None
+    if SHOW_OTHER_MERCHANDISES:
+      other_price_data = {}
+      for om in OTHER_MERCHANDISES:
+        om_week_prices, om_day_prices, om_hour_prices = GetDataService(
+            f"{om}USDT", 1000, START_DATE, END_DATE, None).run()
+        other_price_data[om] = {
+            'week_prices': om_week_prices,
+            'day_prices': om_day_prices,
+            'hour_prices': om_hour_prices
+        }
+
+
+    FullChartOverviewComponent(
+      MERCHANDISE,
+      week_prices,
+      day_prices,
+      hour_prices,
+      START_DATE,
+      END_DATE,
+      True,
+      btc_week_prices,
+      btc_day_prices,
+      btc_hour_prices,
+      SHOW_OTHER_MERCHANDISES,
+      other_price_data
+    ).run()
+  except IndexError:
+    st.write(
+      f"Ngay chua co data.")
+    
+    
+# Draw ngay cua tung than
+def layout_3():
+  from apps.components.full_chart_overview_component import FullChartOverviewComponent
+
+  #   date_select = st.radio(
+  #     "Chọn ngày: ", LIST_DATE)
+  #   date_select = date_select.replace("*", "")
+  
+  # date_select = st.date_input(label='Chọn ngày')
+
+  for year in [2023, 2024]:
+    for month in range(1,13):
+      start_date = f"{year}-{month}-01"
+      end_date = f"{year}-{month}-28"
+      try:
+        week_prices, day_prices, hour_prices = GetDataService(
+          f"{MERCHANDISE}USDT", 1000, start_date, end_date, None).run()
+
+        FullChartOverviewComponent(
+          MERCHANDISE,
+          week_prices,
+          day_prices,
+          hour_prices,
+          start_date,
+          end_date,
+          True,
+          layout=3
+        ).run()
+      except IndexError:
+        st.write(
+          f"Thang {month} - Ngay chua co data.")
 
 if __name__ == "__main__":
     run()

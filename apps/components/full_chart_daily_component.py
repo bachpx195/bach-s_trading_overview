@@ -8,7 +8,7 @@ from apps.helpers.constants import CHART_CONFIG, CHART_HEIGHT
 class FullChartDailyComponent:
   def __init__(self, week_dataframe, dataframe):
     self.day_df = dataframe
-    self.week_df = week_dataframe
+    self.week_df = week_dataframe if week_dataframe else None
     
   def set_week_dataframe(self, week_dataframe, date):
     week_df = week_dataframe[week_dataframe.index.strftime(
@@ -23,8 +23,8 @@ class FullChartDailyComponent:
     df.sort_index(inplace=True) 
 
     tickvals =[k*0.5 for k in range(len(df))]
-    # ticktext = list(
-    #     (f"{date.to_pydatetime().strftime('%m-%d')} {round(df.loc[date].return_oc, 2)}" for date in df.index))
+    ticktext = list(
+        (f"{date.to_pydatetime().strftime('%m-%d')} {round(df.loc[date].return_oc, 2)}" for date in df.index))
 
     fig = go.Figure(data=[go.Candlestick(x=tickvals,
                     open=df['open'], high=df['high'],

@@ -34,7 +34,7 @@ class FullChartHourComponent:
     fig = go.Figure(data=[go.Candlestick(x=tickvals,
                     open=df['open'], high=df['high'],
                     low=df['low'], close=df['close'], hovertext=list(
-        (f"{date.to_pydatetime().strftime('%Hh')} {round(df.loc[date].return_oc, 2)}" for date in df.index)))])
+        (f"{date.to_pydatetime().strftime('%m-%d %Hh')} {round(df.loc[date].return_oc, 2)}" for date in df.index)))])
         
     v_line_location = 3.8
     for _ in range(self.day_prices['low'].size):
@@ -59,7 +59,7 @@ class FullChartHourComponent:
 
     tickvals = [k*0.5 for k in range(len(df))]
     ticktext = list(
-        (f"{date.to_pydatetime().strftime('%Hh')}" for date in df.index))
+        (f"{date.to_pydatetime().strftime('%m-%d %Hh')}" for date in df.index))
 
     fig = go.Figure(data=[go.Candlestick(x=tickvals,
                     open=df['open'], high=df['high'],
