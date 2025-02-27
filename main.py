@@ -9,9 +9,10 @@ CONFIG = {'displayModeBar': False, 'responsive': False}
 MERCHANDISE = "LTC"
 # OTHER_MERCHANDISES = ["LINK"]
 SHOW_OTHER_MERCHANDISES = False
+SHOW_BTC_CHART = True
 
 # Them *** voi cac ngay phu hop
-LIST_DATE = LIST_FIRST_10_DAYS_OF_MONTH
+LIST_DATE = LIST_DATE_SATURDAY
 
 def run():
   st.set_page_config(layout="wide")
@@ -22,7 +23,8 @@ def run():
  
   # layout_1()
   # layout_2()
-  layout_3()
+  # layout_3()
+  layout_high_return()
 
 
 def layout_1():  
@@ -65,7 +67,8 @@ def layout_1():
                 btc_day_prices,
                 btc_hour_prices,
                 SHOW_OTHER_MERCHANDISES,
-                other_price_data
+                other_price_data,
+                show_btc_chart=SHOW_BTC_CHART
             ).run()
   except IndexError:
     st.write(
@@ -134,7 +137,7 @@ def layout_3():
   for year in [2023, 2024]:
     for month in range(1,13):
       start_date = f"{year}-{month}-01"
-      end_date = f"{year}-{month}-28"
+      end_date = f"{year}-{month}-20"
       try:
         week_prices, day_prices, hour_prices = GetDataService(
           f"{MERCHANDISE}USDT", 1000, start_date, end_date, None).run()
@@ -152,6 +155,22 @@ def layout_3():
       except IndexError:
         st.write(
           f"Thang {month} - Ngay chua co data.")
+        
+# Draw ngay cua tung than
+def layout_high_return():
+
+  try:
+    week_prices, day_prices, hour_prices = GetDataService(
+      f"{MERCHANDISE}USDT", 400*5, None, None, None).run()
+    st.bar_chart(day_prices['return_hl'])
+    
+    _, day_altbtc_prices, _ = GetDataService(
+      f"{MERCHANDISE}BTC", 400*5, None, None, None).run()
+    st.bar_chart(day_altbtc_prices['return_hl'])
+    
+  except IndexError:
+    st.write(
+      f"Ngay chua co data.")
 
 if __name__ == "__main__":
     run()

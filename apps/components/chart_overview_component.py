@@ -6,7 +6,20 @@ from apps.components.chart_hour_component import ChartHourComponent
 
 
 class ChartOverviewComponent:
-  def __init__(self, merchandise, week_prices, day_prices, hour_prices, date, diff_with_btc, btc_week_prices=None, btc_day_prices=None, btc_hour_prices=None, show_other_merchandise=False, other_price_data=None):
+  def __init__(
+    self, merchandise,
+    week_prices,
+    day_prices,
+    hour_prices,
+    date,
+    diff_with_btc,
+    btc_week_prices=None,
+    btc_day_prices=None,
+    btc_hour_prices=None,
+    show_other_merchandise=False,
+    other_price_data=None,
+    show_btc_chart=True
+  ):
     self.merchandise = merchandise
     self.date = date
     self.week_prices = week_prices
@@ -18,6 +31,7 @@ class ChartOverviewComponent:
     self.btc_hour_prices = btc_hour_prices
     self.show_other_merchandise = show_other_merchandise
     self.other_price_data = other_price_data
+    self.show_btc_chart = show_btc_chart
 
   def run(self):
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;} </style>', unsafe_allow_html=True)
@@ -25,7 +39,8 @@ class ChartOverviewComponent:
 
     st.write(self.chart_title())
 
-    self.render_chart("BTC", self.btc_week_prices,
+    if self.show_btc_chart:
+      self.render_chart("BTC", self.btc_week_prices,
                       self.btc_day_prices, self.btc_hour_prices)
     
     self.render_chart(self.merchandise, self.week_prices,

@@ -30,6 +30,12 @@ class GetDataService:
         
     return week_prices, day_prices, hour_prices
   
+  def get_day_prices(self):
+    day_prices = load_day_data(self.merchandise_rate,
+        self.record_limit, self.start_date, self.end_date, self.list_day)
+        
+    return day_prices
+  
   def get_month_return(self):
     month_return = load_month_return_data(self.merchandise_rate)
     
